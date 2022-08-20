@@ -30,6 +30,7 @@
     "@editorjs/simple-image": "^1.4.1",
     "@editorjs/underline": "^1.0.0",
     "@editorjs/warning": "^1.2.0",
+    "@element-plus/icons-vue": "^2.0.9",
     "axios": "^0.27.2",
     "element-plus": "^2.2.14",
     "monaco-editor": "^0.34.0",

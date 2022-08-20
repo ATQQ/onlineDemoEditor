@@ -60,6 +60,7 @@ onMounted(() => {
 <style scoped>
 #note-editor {
     background-color: aliceblue;
-    height: 99vh;
+    padding-left: 10px;
+    height: 95vh;
 }
 </style>
