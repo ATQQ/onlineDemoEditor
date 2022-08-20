@@ -7,7 +7,7 @@
       :type='showNoteList?"primary":"default"' 
       :icon="showNoteList?Expand:Fold" 
       circle />
-      <span style="color: #fff;">还在开发中。。。。</span>
+      <span style="color: #fff;">（v{{version}}）还在开发中。。。。</span>
       <el-button disabled>分享</el-button>
       <el-button disabled>测试</el-button>
     </header>
@@ -42,6 +42,7 @@ import { ElMessageBox,ElMessage } from 'element-plus'
 import Note from './components/note/index.vue'
 import CodeEditor from './components/editor/index.vue'
 import RenderPage from './components/render/index.vue'
+import {version} from '../../../package.json'
 
 const showNoteList = ref(true)
 const noteList = reactive([
