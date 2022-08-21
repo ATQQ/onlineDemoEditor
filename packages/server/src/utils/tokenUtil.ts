@@ -1,4 +1,4 @@
-import { User } from '@/db/model/user'
+import { User } from '@/db/model'
 import { expiredRedisKey, getRedisVal, setRedisValue } from '@/db/redisDb'
 import { encryption } from './stringUtil'
 /**

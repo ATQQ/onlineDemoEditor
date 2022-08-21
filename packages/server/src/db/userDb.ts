@@ -4,7 +4,7 @@ import {
   insertCollection,
   updateCollection
 } from '@/lib/dbConnect/mongodb'
-import { User } from './model/user'
+import { User } from './model'
 import { getUniqueKey } from '@/utils/stringUtil'
 
 export function addUser(user: Partial<User>) {

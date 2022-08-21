@@ -1,3 +1,5 @@
+import { Demo } from '../../server/src/db/model'
+
 // 接口的响应值类型定义
 export declare namespace UserApiTypes {
   type login = ResponseData<{
@@ -10,4 +12,10 @@ export declare namespace UserApiTypes {
     id: string
     username: string
   }>
+}
+
+export declare namespace DemoApiTypes {
+  type demoList = ResponseData<Demo[]>
+
+  type createDemo = ResponseData<Demo>
 }

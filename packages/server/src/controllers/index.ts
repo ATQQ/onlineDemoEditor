@@ -1,3 +1,4 @@
 import User from './user'
+import Demo from './demo'
 
-export default [User]
+export default [User, Demo]

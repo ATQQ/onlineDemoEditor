@@ -11,6 +11,7 @@ import { addUser, findUser } from '@/db/userDb'
 import { encryption } from '@/utils/stringUtil'
 import tokenUtil from '@/utils/tokenUtil'
 import { getUserInfo } from '@/utils/userUtil'
+import { createDefaultDemo } from '@/db/demoDb'
 
 @RouterController('api/user')
 export default class User {
@@ -33,6 +34,7 @@ export default class User {
       ;[user] = await findUser({
         username
       })
+      await createDefaultDemo(user.id)
     } else if (user.password !== encryption(password)) {
       return Response.failWithError({ code: 401, msg: '密码错误' })
     }

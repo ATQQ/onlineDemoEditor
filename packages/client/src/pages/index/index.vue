@@ -48,7 +48,7 @@
               :key="v.id"
               :class="{ active: v.id === activeNote }"
             >
-              {{ v.value }}
+              {{ v.title }}
             </li>
           </ul>
         </div>
@@ -109,32 +109,25 @@
   </div>
 </template>
 <script setup lang="ts">
-import { computed, onMounted, reactive, ref } from 'vue'
+import { computed, onMounted, reactive, ref, watchEffect } from 'vue'
 import { Expand, Fold } from '@element-plus/icons-vue'
 import { ElMessageBox, ElMessage } from 'element-plus'
 import { validatePassword, validateUsername } from '@share/utils/validate'
+import { Demo } from '@server/db/model'
 import Note from './components/note/index.vue'
 import CodeEditor from './components/editor/index.vue'
 import RenderPage from './components/render/index.vue'
 import { version } from '../../../package.json'
 import { useCodeStore, useUserStore } from '@/store'
+import { demoApi } from '@/apis'
 
 const $userStore = useUserStore()
 const $codeStore = useCodeStore()
 const isLogin = computed(() => $userStore.isLogin)
 const showNoteList = ref(true)
-const noteList = reactive([
-  {
-    id: 1,
-    value: '测试1'
-  },
-  {
-    id: 2,
-    value: '测试2'
-  }
-])
+const noteList = reactive<Demo[]>([])
 
-const activeNote = ref(1)
+const activeNote = ref('')
 
 const handleAddNote = () => {
   ElMessageBox.prompt('输入笔记名称', '新增笔记', {
@@ -148,10 +141,18 @@ const handleAddNote = () => {
         type: 'success',
         message: `新增 ${value} 成功`
       })
-      noteList.push({
-        id: noteList.length + 1,
-        value
-      })
+      demoApi
+        .createDemo(value)
+        .then((res) => {
+          noteList.push(res.data)
+          activeNote.value = res.data.id
+        })
+        .catch(() => {
+          ElMessage({
+            type: 'error',
+            message: '新增失败'
+          })
+        })
     })
     .catch(() => {
       ElMessage({
@@ -160,8 +161,9 @@ const handleAddNote = () => {
       })
     })
 }
-const handleChangeNote = (v: any) => {
+const handleChangeNote = (v: Demo) => {
   activeNote.value = v.id
+  localStorage.setItem('current-note', v.id)
 }
 const tipText = computed(() => {
   return isLogin.value ? '' : '请先登录 => '
@@ -217,6 +219,21 @@ const handleLogout = () => {
       })
     })
 }
+watchEffect(() => {
+  if (isLogin.value) {
+    demoApi.demoList().then((v) => {
+      noteList.splice(0, noteList.length, ...v.data)
+      // 获取最近的一个笔记
+      // 从query或者localStorage中获取最近的一个笔记
+      activeNote.value = localStorage.getItem('current-note') || v.data[0].id
+    })
+  }
+})
+watchEffect(() => {
+  if (activeNote.value) {
+    console.log('获取代码数据', activeNote.value)
+  }
+})
 onMounted(() => {
   $userStore.checkUserStatus()
 })

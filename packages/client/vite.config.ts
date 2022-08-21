@@ -43,7 +43,8 @@ export default defineConfig({
     alias: {
       '@': path.resolve(__dirname, './src'),
       '@components': path.resolve(__dirname, './src/components'),
-      '@share': path.resolve(__dirname, './../share')
+      '@share': path.resolve(__dirname, './../share'),
+      '@server': path.resolve(__dirname, './../server/src')
     }
   }
 })

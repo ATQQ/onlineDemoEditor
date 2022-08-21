@@ -10,7 +10,8 @@
     "deploy:prod": "zx scripts/deploy/prod.mjs"
   },
   "dependencies": {
-    "axios": "^0.27.2"
+    "axios": "^0.27.2",
+    "@editorjs/editorjs": "^2.25.0"
   },
   "devDependencies": {
     "@types/node": "^17.0.45",
