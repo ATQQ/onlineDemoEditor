@@ -7,7 +7,7 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/',
     name: 'index',
-    component: Index,
+    component: Index
     // children: [
     //   {
     //     path: 'dynamic/:id',

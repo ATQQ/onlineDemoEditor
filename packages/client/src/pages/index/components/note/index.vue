@@ -1,5 +1,5 @@
 <template>
-    <div id="note-editor"></div>
+  <div id="note-editor"></div>
 </template>
 <script setup>
 import EditorJS from '@editorjs/editorjs'
@@ -17,50 +17,50 @@ import underline from '@editorjs/underline'
 import { onMounted } from 'vue'
 
 onMounted(() => {
-    const editor = new EditorJS({
-        holder: 'note-editor',
-        placeholder: '在这里开始记录你的笔记',
-        /**
+  const editor = new EditorJS({
+    holder: 'note-editor',
+    placeholder: '在这里开始记录你的笔记',
+    /**
          onReady callback
         */
-        onReady: () => {
-            console.log('Editor.js is ready to work!')
-        },
-        /**
-        * onChange callback
-        */
-        onChange: (api, e) => {
-            editor.save().then((outputData) => {
-                console.log('Article data: ', outputData)
-            }).catch((error) => {
-                console.log('Saving failed: ', error)
-            })
-        },
-        tools: {
-            header: Header,
-            list: List,
-            embed: Embed,
-            image: Image,
-            checklist: Checklist,
-            code: Code,
-            marker: Marker,
-            inlineCode: InlineCode,
-            link: Link,
-            underline
-        },
-        i18n: {
-            // 国际化相关配置
-        },
-    })
-
+    onReady: () => {
+      console.log('Editor.js is ready to work!')
+    },
+    /**
+     * onChange callback
+     */
+    onChange: (api, e) => {
+      editor
+        .save()
+        .then((outputData) => {
+          console.log('Article data: ', outputData)
+        })
+        .catch((error) => {
+          console.log('Saving failed: ', error)
+        })
+    },
+    tools: {
+      header: Header,
+      list: List,
+      embed: Embed,
+      image: Image,
+      checklist: Checklist,
+      code: Code,
+      marker: Marker,
+      inlineCode: InlineCode,
+      link: Link,
+      underline
+    },
+    i18n: {
+      // 国际化相关配置
+    }
+  })
 })
-
-
 </script>
 <style scoped>
 #note-editor {
-    background-color: aliceblue;
-    padding-left: 10px;
-    height: 95vh;
+  background-color: aliceblue;
+  padding-left: 10px;
+  height: 95vh;
 }
 </style>

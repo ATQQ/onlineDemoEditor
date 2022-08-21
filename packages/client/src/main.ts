@@ -13,22 +13,22 @@ import Axios from './apis/ajax'
 // @ts-ignore
 // eslint-disable-next-line no-restricted-globals
 self.MonacoEnvironment = {
-    getWorker(_:any, label:string) {
-      if (label === 'json') {
-        return new JSONWorker()
-      }
-      if (label === 'css' || label === 'scss' || label === 'less') {
-        return new CSSWorker()
-      }
-      if (label === 'html' || label === 'handlebars' || label === 'razor') {
-        return new HTMLWorker()
-      }
-      if (label === 'typescript' || label === 'javascript') {
-        return new TSWorker()
-      }
-      return new EditorWorker()
-    },
+  getWorker(_: any, label: string) {
+    if (label === 'json') {
+      return new JSONWorker()
+    }
+    if (label === 'css' || label === 'scss' || label === 'less') {
+      return new CSSWorker()
+    }
+    if (label === 'html' || label === 'handlebars' || label === 'razor') {
+      return new HTMLWorker()
+    }
+    if (label === 'typescript' || label === 'javascript') {
+      return new TSWorker()
+    }
+    return new EditorWorker()
   }
+}
 document.title = import.meta.env.VITE_APP_TITLE
 
 const app = createApp(App)

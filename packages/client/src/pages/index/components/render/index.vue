@@ -1,5 +1,5 @@
 <template>
-    <div class="render" ref="webContainer"></div>
+  <div class="render" ref="webContainer"></div>
 </template>
 <script setup lang="ts">
 import { ref, watchEffect } from 'vue'
@@ -23,63 +23,65 @@ const $style = ref(document.createElement('style'))
 const $html = ref(document.createElement('div'))
 const $script = ref(document.createElement('script'))
 shadowPage.value.attachShadow({ mode: 'open' })
-shadowPage.value.shadowRoot?.append($baseStyle.value, $style.value, $html.value, $script.value)
+shadowPage.value.shadowRoot?.append(
+  $baseStyle.value,
+  $style.value,
+  $html.value,
+  $script.value
+)
 
 watchEffect(() => {
-    if (webContainer.value && webContainer.value.children.length === 0) {
-        // webContainer.value.appendChild(shadowPage.value)
-        webContainer.value.appendChild($iframe.value)
-    }
+  if (webContainer.value && webContainer.value.children.length === 0) {
+    // webContainer.value.appendChild(shadowPage.value)
+    webContainer.value.appendChild($iframe.value)
+  }
 })
-
 
 // web components
 watchEffect(() => {
-    if ($codeStore.html !== undefined) {
-        $html.value.innerHTML = $codeStore.html
-    }
+  if ($codeStore.html !== undefined) {
+    $html.value.innerHTML = $codeStore.html
+  }
 })
 watchEffect(() => {
-    if ($codeStore.css !== undefined) {
-        $style.value.innerHTML = $codeStore.css
-    }
+  if ($codeStore.css !== undefined) {
+    $style.value.innerHTML = $codeStore.css
+  }
 })
 watchEffect(() => {
-    if ($codeStore.js !== undefined) {
-        $script.value.remove()
-        $script.value = document.createElement('script')
-        $script.value.textContent = $codeStore.js
+  if ($codeStore.js !== undefined) {
+    $script.value.remove()
+    $script.value = document.createElement('script')
+    $script.value.textContent = $codeStore.js
 
-        if (renderType === 'iframe') {
-            const tem = document.createElement('iframe')
-            tem.addEventListener('load', () => {
-                console.clear()
-                tem.contentDocument?.head.append($baseStyle.value, $style.value)
-                tem.contentDocument?.body.append($html.value, $script.value)
-                $iframe.value.remove()
-                $iframe.value = tem
-            })
-            webContainer?.value?.appendChild(tem)
-            return
-        }
-        shadowPage.value.shadowRoot?.appendChild($script.value)
-
+    if (renderType === 'iframe') {
+      const tem = document.createElement('iframe')
+      tem.addEventListener('load', () => {
+        console.clear()
+        tem.contentDocument?.head.append($baseStyle.value, $style.value)
+        tem.contentDocument?.body.append($html.value, $script.value)
+        $iframe.value.remove()
+        $iframe.value = tem
+      })
+      webContainer?.value?.appendChild(tem)
+      return
     }
+    shadowPage.value.shadowRoot?.appendChild($script.value)
+  }
 })
-
 </script>
 <style scoped lang="scss">
 .render {
-    width: 100%;
-    height: 100%;
-    background-color: #fff;
+  width: 100%;
+  height: 100%;
+  background-color: #fff;
 }
 </style>
 <style>
 iframe {
-    width: 100%;
-    height: 100%;
-    background-color: #fff;
-    border: none;
+  width: 100%;
+  height: 100%;
+  background-color: #fff;
+  border: none;
 }
 </style>

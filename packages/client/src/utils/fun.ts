@@ -1,6 +1,6 @@
 export function debounce(fn: Function, delay: number) {
   let timer: any = null
-  return function (...args:any[]) {
+  return function (...args: any[]) {
     if (timer) {
       clearTimeout(timer)
     }

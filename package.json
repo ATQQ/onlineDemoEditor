@@ -4,13 +4,13 @@
   "version": "1.0.0",
   "description": "在线编写Web Demo又能记笔记的应用",
   "scripts": {
-    "lint": "eslint packages/** --ext .js,.ts --fix",
+    "lint": "pnpm lint --recursive",
     "dev": "pnpm dev --recursive --parallel",
     "build": "pnpm build --recursive",
     "deploy:prod": "zx scripts/deploy/prod.mjs"
   },
   "dependencies": {
-   
+    "axios": "^0.27.2"
   },
   "devDependencies": {
     "@types/node": "^17.0.45",

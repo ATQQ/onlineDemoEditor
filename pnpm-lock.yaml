@@ -8,6 +8,7 @@ importers:
       '@typescript-eslint/eslint-plugin': ^5.33.1
       '@typescript-eslint/parser': ^5.33.1
       '@vitest/ui': ^0.10.5
+      axios: ^0.27.2
       c8: ^7.12.0
       eslint: ^8.22.0
       eslint-config-airbnb-base: ^15.0.0
@@ -20,6 +21,8 @@ importers:
       vite: ^3.0.9
       vite-plugin-eslint: ^1.8.1
       vitest: ^0.16.0
+    dependencies:
+      axios: 0.27.2
     devDependencies:
       '@types/node': 17.0.45
       '@typescript-eslint/eslint-plugin': 5.33.1_ac9d23a22d787f7b7991fddcc31412d2
@@ -58,7 +61,6 @@ importers:
       '@editorjs/warning': ^1.2.0
       '@element-plus/icons-vue': ^2.0.9
       '@vitejs/plugin-vue': ^2.3.4
-      axios: ^0.27.2
       element-plus: ^2.2.14
       monaco-editor: ^0.34.0
       pinia: ^2.0.19
@@ -86,7 +88,6 @@ importers:
       '@editorjs/underline': 1.0.0
       '@editorjs/warning': 1.2.0
       '@element-plus/icons-vue': 2.0.9_vue@3.2.37
-      axios: 0.27.2
       element-plus: 2.2.14_vue@3.2.37
       monaco-editor: 0.34.0
       pinia: 2.0.19_typescript@4.7.4+vue@3.2.37
