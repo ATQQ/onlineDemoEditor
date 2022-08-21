@@ -57,6 +57,7 @@
     "no-console": "off",
     "func-names": "off",
     "class-methods-use-this":"off",
-    "no-shadow": "off"
+    "no-shadow": "off",
+    "@typescript-eslint/no-non-null-assertion":"off"
   }
 }

@@ -1,5 +1,4 @@
 import { defineStore } from 'pinia'
-import { ElMessage } from 'element-plus'
 import { userAPI } from '@/apis'
 
 const useStore = defineStore('user', {
@@ -11,13 +10,12 @@ const useStore = defineStore('user', {
   }),
   actions: {
     async login(username: string, password: string) {
-      userAPI.login(username, password).then((res) => {
+      return userAPI.login(username, password).then((res) => {
         this.username = res.data.username
         this.token = res.data.token
         this.isLogin = true
         this.userId = res.data.id
         localStorage.setItem('token', res.data.token)
-        ElMessage.success('登录成功')
       })
     },
     async checkUserStatus() {
@@ -34,6 +32,15 @@ const useStore = defineStore('user', {
         .catch(() => {
           this.isLogin = false
         })
+    },
+    logout() {
+      return userAPI.logout().then(() => {
+        this.token = ''
+        this.username = ''
+        this.isLogin = false
+        this.userId = ''
+        localStorage.removeItem('token')
+      })
     }
   }
 })

@@ -17,6 +17,13 @@ const useStore = defineStore('code', {
     },
     updateJs(js: string) {
       this.js = js
+    },
+    clear() {
+      this.html = '<h1>Hello World</h1>'
+      this.css = `h1 {
+  color: red;
+}`
+      this.js = 'console.log("Hello World")'
     }
   }
 })

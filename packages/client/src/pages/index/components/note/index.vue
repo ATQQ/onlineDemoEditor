@@ -13,9 +13,10 @@ import Marker from '@editorjs/marker'
 import InlineCode from '@editorjs/inline-code'
 import Link from '@editorjs/link'
 import underline from '@editorjs/underline'
-
 import { onMounted } from 'vue'
+import { useNoteStore } from '@/store'
 
+const $noteStore = useNoteStore()
 onMounted(() => {
   const editor = new EditorJS({
     holder: 'note-editor',
@@ -25,6 +26,8 @@ onMounted(() => {
         */
     onReady: () => {
       console.log('Editor.js is ready to work!')
+      // 内容初始化
+      editor.render($noteStore.note)
     },
     /**
      * onChange callback
@@ -33,7 +36,7 @@ onMounted(() => {
       editor
         .save()
         .then((outputData) => {
-          console.log('Article data: ', outputData)
+          $noteStore.updateNote(outputData)
         })
         .catch((error) => {
           console.log('Saving failed: ', error)

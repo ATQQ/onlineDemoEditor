@@ -19,12 +19,21 @@
           <el-button disabled>保存</el-button>
         </div>
       </div>
-      <el-link
-        type="primary"
-        href="https://github.com/ATQQ/onlineDemoEditor"
-        target="_blank"
-        >GitHub</el-link
-      >
+      <div>
+        <el-link
+          type="primary"
+          href="https://github.com/ATQQ/onlineDemoEditor"
+          target="_blank"
+          >GitHub</el-link
+        >
+        <el-link
+          v-if="isLogin"
+          class="logout"
+          type="danger"
+          @click="handleLogout"
+          >退出登录</el-link
+        >
+      </div>
     </header>
     <main>
       <div class="note-list" v-show="showNoteList">
@@ -108,9 +117,10 @@ import Note from './components/note/index.vue'
 import CodeEditor from './components/editor/index.vue'
 import RenderPage from './components/render/index.vue'
 import { version } from '../../../package.json'
-import { useUserStore } from '@/store'
+import { useCodeStore, useUserStore } from '@/store'
 
 const $userStore = useUserStore()
+const $codeStore = useCodeStore()
 const isLogin = computed(() => $userStore.isLogin)
 const showNoteList = ref(true)
 const noteList = reactive([
@@ -154,7 +164,7 @@ const handleChangeNote = (v: any) => {
   activeNote.value = v.id
 }
 const tipText = computed(() => {
-  return isLogin.value ? `欢迎，${$userStore.username}💐` : '请先登录 => '
+  return isLogin.value ? '' : '请先登录 => '
 })
 
 const showLoginDialog = ref(false)
@@ -170,7 +180,42 @@ const handleLogin = () => {
     ElMessage.error('账号或密码格式不正确')
     return
   }
-  $userStore.login(userForm.username, userForm.password)
+  $userStore
+    .login(userForm.username, userForm.password)
+    .then(() => {
+      ElMessage({
+        type: 'success',
+        message: '登录成功'
+      })
+      showLoginDialog.value = false
+    })
+    .catch(() => {
+      ElMessage({
+        type: 'error',
+        message: '登录失败'
+      })
+    })
+}
+const handleLogout = () => {
+  ElMessageBox.confirm('确定退出登录吗？', {
+    confirmButtonText: '确定',
+    cancelButtonText: '取消'
+  })
+    .then(() => {
+      $userStore.logout().then(() => {
+        ElMessage({
+          type: 'success',
+          message: '退出登录成功'
+        })
+        $codeStore.clear()
+      })
+    })
+    .catch(() => {
+      ElMessage({
+        type: 'info',
+        message: '取消'
+      })
+    })
 }
 onMounted(() => {
   $userStore.checkUserStatus()
@@ -260,5 +305,8 @@ main {
 .container {
   width: 33%;
   flex: 1;
+}
+.logout {
+  margin: 0 16px;
 }
 </style>

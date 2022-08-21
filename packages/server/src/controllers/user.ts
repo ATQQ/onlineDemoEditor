@@ -4,7 +4,8 @@ import {
   ReqBody,
   Response,
   Get,
-  FWRequest
+  FWRequest,
+  Delete
 } from 'flash-wolves'
 import { addUser, findUser } from '@/db/userDb'
 import { encryption } from '@/utils/stringUtil'
@@ -49,5 +50,10 @@ export default class User {
       id: user.id,
       username: user.username
     }
+  }
+
+  @Delete('logout', { requiresAuth: true })
+  async logout(req: FWRequest) {
+    tokenUtil.expiredToken(req.headers?.token as string)
   }
 }

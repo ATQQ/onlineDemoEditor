@@ -11,12 +11,12 @@ function login(username: string, password: string): UserApiTypes.login {
 function check() {
   return ajax.get('user/check')
 }
-function logOut(): Promise<any> {
-  return ajax.post('user/logout')
+function logout() {
+  return ajax.delete('user/logout')
 }
 
 export default {
   login,
-  logOut,
+  logout,
   check
 }

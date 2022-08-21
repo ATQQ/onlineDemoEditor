@@ -17,7 +17,7 @@
 </template>
 <script setup lang="ts">
 import * as monaco from 'monaco-editor'
-import { onMounted, ref, toRaw, watchEffect } from 'vue'
+import { onMounted, ref, toRaw } from 'vue'
 import { useCodeStore } from '@/store'
 import { debounce } from '@/utils/fun'
 
