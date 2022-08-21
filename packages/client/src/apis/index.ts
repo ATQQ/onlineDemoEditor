@@ -1,1 +1,1 @@
-export { default as publicApi } from './modules/public'
+export { default as userAPI } from './modules/user'

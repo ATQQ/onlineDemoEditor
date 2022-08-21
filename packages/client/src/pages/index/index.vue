@@ -103,6 +103,7 @@
 import { computed, onMounted, reactive, ref } from 'vue'
 import { Expand, Fold } from '@element-plus/icons-vue'
 import { ElMessageBox, ElMessage } from 'element-plus'
+import { validatePassword, validateUsername } from '@share/utils/validate'
 import Note from './components/note/index.vue'
 import CodeEditor from './components/editor/index.vue'
 import RenderPage from './components/render/index.vue'
@@ -153,7 +154,7 @@ const handleChangeNote = (v: any) => {
   activeNote.value = v.id
 }
 const tipText = computed(() => {
-  return isLogin.value ? `欢迎，${$userStore.account}💐` : '请先登录 => '
+  return isLogin.value ? `欢迎，${$userStore.username}💐` : '请先登录 => '
 })
 
 const showLoginDialog = ref(false)
@@ -163,14 +164,16 @@ const userForm = reactive({
 })
 const handleLogin = () => {
   if (
-    validateUsername(userForm.username) ||
-    validatePassword(userForm.password)
+    !validateUsername(userForm.username) ||
+    !validatePassword(userForm.password)
   ) {
     ElMessage.error('账号或密码格式不正确')
+    return
   }
+  $userStore.login(userForm.username, userForm.password)
 }
 onMounted(() => {
-  // 接口拉数据
+  $userStore.checkUserStatus()
 })
 </script>
 <style scoped lang="scss">

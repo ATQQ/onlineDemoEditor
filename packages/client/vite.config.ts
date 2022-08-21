@@ -34,27 +34,16 @@ export default defineConfig({
     host: '0.0.0.0',
     proxy: {
       '/api/': {
-        target:
-          'https://service-rbji0bev-1256505457.cd.apigw.tencentcs.com/release',
-        changeOrigin: true,
-        rewrite: (p) => p.replace(/^\/api/, '')
-      },
-      '/api-prod/': {
-        target: 'http://localhost:3001',
-        changeOrigin: true,
-        rewrite: (p) => p.replace(/^\/api-prod/, '')
-      },
-      '/api-test/': {
-        target: 'http://localhost:3001',
-        changeOrigin: true,
-        rewrite: (p) => p.replace(/^\/api-prod/, '')
+        target: 'http://localhost:6654',
+        changeOrigin: true
       }
     }
   },
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
-      '@components': path.resolve(__dirname, './src/components')
+      '@components': path.resolve(__dirname, './src/components'),
+      '@share': path.resolve(__dirname, './../share')
     }
   }
 })

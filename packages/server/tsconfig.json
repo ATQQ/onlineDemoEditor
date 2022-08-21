@@ -1,0 +1,13 @@
+{
+  "compilerOptions": {
+    "experimentalDecorators": true,
+    "baseUrl": ".",
+    "paths": {
+      "@/*": [
+        "src/*"
+      ],
+      "@share/*":["./../share/*"],
+    }
+  },
+  "extends": "../../tsconfig.json",
+}

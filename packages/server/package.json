@@ -1,0 +1,23 @@
+{
+  "name": "editor-client",
+  "private": true,
+  "scripts": {
+    "dev": "run-p build:watch dev:server",
+    "dev:server": "nodemon dist/index.js",
+    "build:watch": "tsup --watch",
+    "build": "rimraf dist && tsup --minify"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "flash-wolves": "^0.3.2",
+    "mongodb": "^3.7.3",
+    "qiniu": "^7.4.0",
+    "redis": "^3.1.2"
+  },
+  "devDependencies": {
+    "@types/mongodb": "^3.6.20",
+    "@types/redis": "^2.8.32"
+  }
+}

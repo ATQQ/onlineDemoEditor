@@ -8,8 +8,9 @@
     "sourceMap": true,
     "resolveJsonModule": true,
     "esModuleInterop": true,
-    "allowJs": true,
     "lib": ["esnext", "dom"],
     "types": ["vite/client", "@types/node", "vitest/globals"],
+    "outDir": "./"
   },
+  "exclude": ["dist", "node_modules"],
 }

@@ -1,4 +1,6 @@
 import axios from 'axios'
+import { ElMessage } from 'element-plus'
+import { useUserStore } from '@/store'
 
 const instance = axios.create({
   baseURL: import.meta.env.VITE_APP_AXIOS_BASE_URL
@@ -35,17 +37,37 @@ instance.interceptors.request.use((config) => {
 /**
  * 响应拦截
  */
-instance.interceptors.response.use((v) => {
-  if (v.data?.code === 401) {
-    localStorage.removeItem('token')
-    // alert('即将跳转登录页。。。', '登录过期')
-    // setTimeout(redirectHome, 1500)
-    return v.data
+instance.interceptors.response.use(
+  (v) => {
+    if (v.status === 200) {
+      let err = ''
+      if (v.data?.code === 401) {
+        localStorage.removeItem('token')
+        // 登录状态修改
+        const $userStore = useUserStore()
+        $userStore.$patch({
+          token: '',
+          isLogin: false,
+          userId: '',
+          username: ''
+        })
+        err = v.data.msg
+      }
+      if (v.data?.code !== 0) {
+        err = v.data.msg
+      }
+      if (err) {
+        ElMessage.error(err)
+        return Promise.reject(v)
+      }
+      return v.data
+    }
+    ElMessage.error(v.statusText)
+    return Promise.reject(v)
+  },
+  (err) => {
+    ElMessage.error(`网络错误：${err}`)
+    return Promise.reject(err)
   }
-  if (v.status === 200) {
-    return v.data
-  }
-  // alert(v.statusText, '网络错误')
-  return Promise.reject(v)
-})
+)
 export default instance
