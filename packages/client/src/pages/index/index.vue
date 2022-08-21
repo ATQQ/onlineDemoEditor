@@ -15,8 +15,8 @@
           >
         </div>
         <div v-else>
-          <el-button disabled>分享</el-button>
-          <el-button disabled>保存</el-button>
+          <el-button disabled>分享（开发中..）</el-button>
+          <el-button type="success" @click="handleSave">保存</el-button>
         </div>
       </div>
       <div>
@@ -44,9 +44,9 @@
           <ul>
             <li
               @click="handleChangeNote(v)"
-              v-for="v in noteList"
+              v-for="v in demoList"
               :key="v.id"
-              :class="{ active: v.id === activeNote }"
+              :class="{ active: v.id === activeDemoId }"
             >
               {{ v.title }}
             </li>
@@ -65,7 +65,11 @@
       </div>
       <!-- 写代码 -->
       <div class="code container">
-        <CodeEditor />
+        <CodeEditor
+          :html="codeData.html"
+          :css="codeData.css"
+          :js="codeData.js"
+        />
       </div>
       <!-- 代码渲染结果 -->
       <div class="render container">
@@ -119,16 +123,19 @@ import CodeEditor from './components/editor/index.vue'
 import RenderPage from './components/render/index.vue'
 import { version } from '../../../package.json'
 import { useCodeStore, useUserStore } from '@/store'
-import { demoApi } from '@/apis'
+import { codeApi, demoApi } from '@/apis'
 
 const $userStore = useUserStore()
 const $codeStore = useCodeStore()
 const isLogin = computed(() => $userStore.isLogin)
 const showNoteList = ref(true)
-const noteList = reactive<Demo[]>([])
+const demoList = reactive<Demo[]>([])
 
-const activeNote = ref('')
-
+const activeDemoId = ref('')
+const activeDemo = computed(() => {
+  const id = activeDemoId.value
+  return demoList.find((v) => v.id === id)
+})
 const handleAddNote = () => {
   ElMessageBox.prompt('输入笔记名称', '新增笔记', {
     confirmButtonText: '确定',
@@ -144,8 +151,8 @@ const handleAddNote = () => {
       demoApi
         .createDemo(value)
         .then((res) => {
-          noteList.push(res.data)
-          activeNote.value = res.data.id
+          demoList.push(res.data)
+          activeDemoId.value = res.data.id
         })
         .catch(() => {
           ElMessage({
@@ -161,8 +168,31 @@ const handleAddNote = () => {
       })
     })
 }
-const handleChangeNote = (v: Demo) => {
-  activeNote.value = v.id
+const handleSave = (showSuccess = true) => {
+  return codeApi
+    .updateDetail(activeDemo.value!.codeId, {
+      css: $codeStore.css,
+      html: $codeStore.html,
+      js: $codeStore.js
+    })
+    .then(() => {
+      if (showSuccess) {
+        ElMessage({
+          type: 'success',
+          message: '保存成功'
+        })
+      }
+    })
+    .catch(() => {
+      ElMessage({
+        type: 'error',
+        message: '保存失败'
+      })
+    })
+}
+const handleChangeNote = async (v: Demo) => {
+  await handleSave(false)
+  activeDemoId.value = v.id
   localStorage.setItem('current-note', v.id)
 }
 const tipText = computed(() => {
@@ -222,18 +252,28 @@ const handleLogout = () => {
 watchEffect(() => {
   if (isLogin.value) {
     demoApi.demoList().then((v) => {
-      noteList.splice(0, noteList.length, ...v.data)
+      demoList.splice(0, demoList.length, ...v.data)
       // 获取最近的一个笔记
       // 从query或者localStorage中获取最近的一个笔记
-      activeNote.value = localStorage.getItem('current-note') || v.data[0].id
+      activeDemoId.value = localStorage.getItem('current-note') || v.data[0].id
     })
   }
 })
+const codeData = reactive({
+  html: '',
+  css: '',
+  js: ''
+})
 watchEffect(() => {
-  if (activeNote.value) {
-    console.log('获取代码数据', activeNote.value)
+  if (activeDemoId.value) {
+    codeApi.codeDetail(activeDemo.value!.codeId).then((v) => {
+      codeData.css = v.data.css
+      codeData.html = v.data.html
+      codeData.js = v.data.js
+    })
   }
 })
+
 onMounted(() => {
   $userStore.checkUserStatus()
 })

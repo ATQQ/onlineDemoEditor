@@ -17,9 +17,15 @@
 </template>
 <script setup lang="ts">
 import * as monaco from 'monaco-editor'
-import { onMounted, ref, toRaw } from 'vue'
+import { onMounted, ref, toRaw, watchEffect } from 'vue'
 import { useCodeStore } from '@/store'
 import { debounce } from '@/utils/fun'
+
+const props = defineProps<{
+  js: string
+  css: string
+  html: string
+}>()
 
 const $codeStore = useCodeStore()
 
@@ -28,6 +34,25 @@ const CSSEditor = ref<monaco.editor.IStandaloneCodeEditor>(null as any)
 const JSEditor = ref<monaco.editor.IStandaloneCodeEditor>(null as any)
 
 const activeEditor = ref<'隐藏' | 'CSS' | 'JS'>('CSS')
+watchEffect(() => {
+  if (htmlEditor.value && props.html) {
+    toRaw(htmlEditor.value).setValue(props.html)
+    $codeStore.updateHtml(props.html)
+  }
+})
+watchEffect(() => {
+  if (CSSEditor.value && props.css) {
+    toRaw(CSSEditor.value).setValue(props.css)
+    $codeStore.updateCss(props.css)
+  }
+})
+watchEffect(() => {
+  if (JSEditor.value && props.js) {
+    toRaw(JSEditor.value).setValue(props.js)
+    $codeStore.updateJs(props.js)
+  }
+})
+
 onMounted(() => {
   const delay = 200
   // 从接口拿初始化数据

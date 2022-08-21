@@ -3,7 +3,7 @@ import { getUserInfo } from '@/utils/userUtil'
 import { createDefaultDemo, findDemo } from '@/db/demoDb'
 
 @RouterController('api/demo')
-export default class Demo {
+export default class DemoController {
   private filterDemo(list: any) {
     return list.map((item: any) => {
       delete item._id

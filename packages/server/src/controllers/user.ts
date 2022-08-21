@@ -14,7 +14,7 @@ import { getUserInfo } from '@/utils/userUtil'
 import { createDefaultDemo } from '@/db/demoDb'
 
 @RouterController('api/user')
-export default class User {
+export default class UserController {
   @Post('login')
   async login(
     @ReqBody('username') username: string,

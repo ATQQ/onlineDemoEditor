@@ -5,7 +5,7 @@ function demoList(): DemoApiTypes.demoList {
   return ajax.get('demo/list')
 }
 
-function createDemo(title: string) {
+function createDemo(title: string): DemoApiTypes.createDemo {
   return ajax.post('demo/create', {
     title
   })
