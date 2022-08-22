@@ -1,4 +1,4 @@
-import { Code, Demo } from '../../server/src/db/model'
+import { Code, Demo, Note } from '../../server/src/db/model'
 
 // 接口的响应值类型定义
 export declare namespace UserApiTypes {
@@ -22,4 +22,11 @@ export declare namespace DemoApiTypes {
 
 export declare namespace CodeApiTypes {
   type codeDetail = ResponseData<Code>
+}
+
+export declare namespace NoteApiTypes {
+  type noteDetail = ResponseData<{
+    id: string
+    data: Note['data']
+  }>
 }

@@ -78,7 +78,7 @@ onMounted(() => {
   )
   JSEditor.value = monaco.editor.create(document.getElementById('js-editor')!, {
     value: $codeStore.js,
-    language: 'typescript',
+    language: 'javascript',
     theme: 'vs-dark',
     fontSize: 18,
     automaticLayout: true

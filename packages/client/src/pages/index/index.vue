@@ -1,12 +1,20 @@
 <template>
   <div class="layout">
     <header>
-      <el-button
-        @click="showNoteList = !showNoteList"
-        :type="showNoteList ? 'primary' : 'default'"
-        :icon="showNoteList ? Expand : Fold"
-        circle
-      />
+      <div>
+        <el-button
+          @click="showNoteList = !showNoteList"
+          :type="showNoteList ? 'primary' : 'default'"
+          :icon="showNoteList ? Expand : Fold"
+          circle
+        />
+        <el-button
+          @click="showNoteEditor = !showNoteEditor"
+          :type="showNoteEditor ? 'primary' : 'default'"
+          :icon="EditPen"
+          circle
+        />
+      </div>
       <div class="top-tools">
         <span class="tip">{{ tipText }}</span>
         <div v-if="!isLogin">
@@ -62,8 +70,14 @@
       </div>
       <!-- TODO：失去焦点时自动保存，格式化 -->
       <!-- 写笔记 -->
-      <div class="note container">
-        <Note />
+      <div
+        class="note container"
+        :style="{
+          flex: showNoteEditor ? '1' : '0',
+          overflow: showNoteEditor ? 'visible' : 'hidden'
+        }"
+      >
+        <Note :data="codeData.note" />
       </div>
       <!-- 写代码 -->
       <div class="code container">
@@ -123,7 +137,7 @@ import {
   ref,
   watchEffect
 } from 'vue'
-import { Expand, Fold } from '@element-plus/icons-vue'
+import { Expand, Fold, EditPen } from '@element-plus/icons-vue'
 import { ElMessageBox, ElMessage } from 'element-plus'
 import { validatePassword, validateUsername } from '@share/utils/validate'
 import { Demo } from '@server/db/model'
@@ -131,13 +145,16 @@ import Note from './components/note/index.vue'
 import CodeEditor from './components/editor/index.vue'
 import RenderPage from './components/render/index.vue'
 import { version } from '../../../package.json'
-import { useCodeStore, useUserStore } from '@/store'
-import { codeApi, demoApi } from '@/apis'
+import { useCodeStore, useNoteStore, useUserStore } from '@/store'
+import { codeApi, demoApi, noteApi } from '@/apis'
 
 const $userStore = useUserStore()
 const $codeStore = useCodeStore()
+const $noteStore = useNoteStore()
+
 const isLogin = computed(() => $userStore.isLogin)
 const showNoteList = ref(true)
+const showNoteEditor = ref(true)
 const demoList = reactive<Demo[]>([])
 
 const activeDemoId = ref('')
@@ -177,13 +194,24 @@ const handleAddNote = () => {
       })
     })
 }
-const handleSave = (showSuccess = true) => {
-  return codeApi
+const handleSave = async (showSuccess = true) => {
+  if (!isLogin.value) {
+    return
+  }
+  await codeApi
     .updateDetail(activeDemo.value!.codeId, {
       css: $codeStore.css,
       html: $codeStore.html,
       js: $codeStore.js
     })
+    .catch(() => {
+      ElMessage({
+        type: 'error',
+        message: '保存代码失败'
+      })
+    })
+  await noteApi
+    .updateDetail(activeDemo.value!.noteId, $noteStore.note)
     .then(() => {
       if (showSuccess) {
         ElMessage({
@@ -195,7 +223,7 @@ const handleSave = (showSuccess = true) => {
     .catch(() => {
       ElMessage({
         type: 'error',
-        message: '保存失败'
+        message: '保存笔记失败'
       })
     })
 }
@@ -271,14 +299,23 @@ watchEffect(() => {
 const codeData = reactive({
   html: '',
   css: '',
-  js: ''
+  js: '',
+  note: null as any
 })
 watchEffect(() => {
   if (activeDemoId.value) {
     codeApi.codeDetail(activeDemo.value!.codeId).then((v) => {
-      codeData.css = v.data.css
-      codeData.html = v.data.html
-      codeData.js = v.data.js
+      codeData.html = '<!-- 数据加载中 -->'
+      codeData.css = '/* 数据加载中 */'
+      codeData.js = '// 数据加载中'
+      setTimeout(() => {
+        codeData.html = v.data.html
+        codeData.css = v.data.css
+        codeData.js = v.data.js
+      }, 200)
+    })
+    noteApi.getNodeDetail(activeDemo.value!.noteId).then((v) => {
+      codeData.note = v.data.data
     })
   }
 })
@@ -290,21 +327,63 @@ const handleKeyDownEvent = (e: KeyboardEvent) => {
     handleSave()
   }
 }
-const handleVisibilityChange = () => {
-  if (document.hidden) {
-    handleSave()
-  } else {
-    handleSave()
-  }
-}
+// const handleVisibilityChange = () => {
+//   if (document.hidden) {
+//     handleSave()
+//   } else {
+//     handleSave()
+//   }
+// }
 onMounted(() => {
-  $userStore.checkUserStatus()
+  $userStore.checkUserStatus().then((status) => {
+    if (!status) {
+      $noteStore.updateNote({
+        blocks: [
+          {
+            type: 'header',
+            data: { text: '示例笔记', level: 1 }
+          },
+          {
+            type: 'header',
+            data: { text: '二级标题', level: 2 }
+          },
+          {
+            type: 'header',
+            data: { text: '三级标题', level: 3 }
+          },
+          {
+            type: 'paragraph',
+            data: { text: '<b>加粗内容</b>' }
+          },
+          {
+            type: 'paragraph',
+            data: { text: '<i>斜体字</i>' }
+          },
+          {
+            type: 'paragraph',
+            data: { text: '高亮<mark class="cdx-marker">部分</mark>内容' }
+          },
+          {
+            type: 'paragraph',
+            data: { text: '部分<code class="inline-code">代码</code>标记' }
+          },
+          {
+            type: 'paragraph',
+            data: { text: '部分<u class="cdx-underline">下划线</u>' }
+          }
+        ].map((block) => ({
+          ...block,
+          id: Math.random().toString(36).substr(2)
+        }))
+      })
+    }
+  })
   window.addEventListener('keydown', handleKeyDownEvent)
-  document.addEventListener('visibilitychange', handleVisibilityChange, false)
+  // document.addEventListener('visibilitychange', handleVisibilityChange, false)
 })
 onUnmounted(() => {
   window.removeEventListener('keydown', handleKeyDownEvent)
-  document.removeEventListener('visibilitychange', handleVisibilityChange)
+  // document.removeEventListener('visibilitychange', handleVisibilityChange)
 })
 </script>
 <style scoped lang="scss">

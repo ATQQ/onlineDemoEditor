@@ -20,9 +20,9 @@ const useStore = defineStore('user', {
     },
     async checkUserStatus() {
       if (!this.token) {
-        return
+        return false
       }
-      userAPI
+      return userAPI
         .check()
         .then((res) => {
           this.username = res.data.username
@@ -31,6 +31,7 @@ const useStore = defineStore('user', {
         })
         .catch(() => {
           this.isLogin = false
+          return false
         })
     },
     logout() {
