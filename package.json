@@ -7,7 +7,7 @@
     "lint": "pnpm lint --recursive",
     "dev": "pnpm dev --recursive --parallel",
     "build": "pnpm build --recursive",
-    "deploy:prod": "zx scripts/deploy/prod.mjs"
+    "deploy:prod": "zx scripts/deploy/client.mjs && zx scripts/deploy/server.mjs"
   },
   "dependencies": {
     "@editorjs/editorjs": "^2.25.0",
