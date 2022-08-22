@@ -9,6 +9,7 @@
           circle
         />
         <el-button
+          :disabled="!isLogin"
           @click="showNoteEditor = !showNoteEditor"
           :type="showNoteEditor ? 'primary' : 'default'"
           :icon="EditPen"
@@ -73,8 +74,8 @@
       <div
         class="note container"
         :style="{
-          flex: showNoteEditor ? '1' : '0',
-          overflow: showNoteEditor ? 'visible' : 'hidden'
+          flex: isLogin && showNoteEditor ? '1' : '0',
+          overflow: isLogin && showNoteEditor ? 'visible' : 'hidden'
         }"
       >
         <Note :data="codeData.note" />
