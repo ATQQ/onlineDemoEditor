@@ -20,6 +20,7 @@ importers:
       eslint-plugin-vue: ^9.3.0
       nodemon: ^2.0.19
       npm-run-all: ^4.1.5
+      prettier: ^2.7.1
       tsup: ^6.2.2
       typescript: ^4.7.4
       vite: ^3.0.9
@@ -28,6 +29,7 @@ importers:
     dependencies:
       '@editorjs/editorjs': 2.25.0
       axios: 0.27.2
+      prettier: 2.7.1
     devDependencies:
       '@types/node': 17.0.45
       '@typescript-eslint/eslint-plugin': 5.33.1_ac9d23a22d787f7b7991fddcc31412d2
@@ -38,7 +40,7 @@ importers:
       eslint-config-airbnb-base: 15.0.0_d200769a7ba6a6a08d74f4b865523b7d
       eslint-config-prettier: 8.5.0_eslint@8.22.0
       eslint-plugin-import: 2.26.0_d84fd6a95fa4dbf27f958da75f46ec9f
-      eslint-plugin-prettier: 4.2.1_aacfff61fe60ed3574397f9c14d5d962
+      eslint-plugin-prettier: 4.2.1_4684e48c5980d148e4d39aec3317fee1
       eslint-plugin-todo-ddl: 1.1.1
       eslint-plugin-vue: 9.3.0_eslint@8.22.0
       nodemon: 2.0.19
@@ -1889,7 +1891,7 @@ packages:
       - supports-color
     dev: true
 
-  /eslint-plugin-prettier/4.2.1_aacfff61fe60ed3574397f9c14d5d962:
+  /eslint-plugin-prettier/4.2.1_4684e48c5980d148e4d39aec3317fee1:
     resolution: {integrity: sha512-f/0rXLXUt0oFYs8ra4w49wYZBG5GKZpAYsJSm6rnYL5uVDjd+zowwMwVZHnAjf4edNrKpCDYfXDgmRE/Ak7QyQ==}
     engines: {node: '>=12.0.0'}
     peerDependencies:
@@ -1902,6 +1904,7 @@ packages:
     dependencies:
       eslint: 8.22.0
       eslint-config-prettier: 8.5.0_eslint@8.22.0
+      prettier: 2.7.1
       prettier-linter-helpers: 1.0.0
     dev: true
 
@@ -3336,6 +3339,11 @@ packages:
     dependencies:
       fast-diff: 1.2.0
     dev: true
+
+  /prettier/2.7.1:
+    resolution: {integrity: sha512-ujppO+MkdPqoVINuDFDRLClm7D78qbDt0/NR+wp5FqEZOoTNAjPHWj17QRhu7geIHJfcNhRk1XVQmF8Bp3ye+g==}
+    engines: {node: '>=10.13.0'}
+    hasBin: true
 
   /process-nextick-args/2.0.1:
     resolution: {integrity: sha512-3ouUOpQhtgrbOa17J7+uxOTpITYWaGP7/AhoR3+A+/1e9skrzelGi/dXzEYyvbxubEF6Wn2ypscTKiKJFFn1ag==}

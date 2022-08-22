@@ -148,6 +148,7 @@ import RenderPage from './components/render/index.vue'
 import { version } from '../../../package.json'
 import { useCodeStore, useNoteStore, useUserStore } from '@/store'
 import { codeApi, demoApi, noteApi } from '@/apis'
+import { formatCss, formatHtml, formatJS } from '@/utils/code'
 
 const $userStore = useUserStore()
 const $codeStore = useCodeStore()
@@ -195,15 +196,30 @@ const handleAddNote = () => {
       })
     })
 }
+const codeData = reactive({
+  html: '',
+  css: '',
+  js: '',
+  note: null as any
+})
+
 const handleSave = async (showSuccess = true) => {
   if (!isLogin.value) {
     return
   }
+  // 先进行格式化
+  const cssResult = formatCss($codeStore.css)
+  const jsResult = formatJS($codeStore.js)
+  const htmlResult = formatHtml($codeStore.html)
+
+  codeData.css = cssResult
+  codeData.js = jsResult
+  codeData.html = htmlResult
   await codeApi
     .updateDetail(activeDemo.value!.codeId, {
-      css: $codeStore.css,
-      html: $codeStore.html,
-      js: $codeStore.js
+      css: cssResult,
+      html: htmlResult,
+      js: jsResult
     })
     .catch(() => {
       ElMessage({
@@ -297,12 +313,7 @@ watchEffect(() => {
     })
   }
 })
-const codeData = reactive({
-  html: '',
-  css: '',
-  js: '',
-  note: null as any
-})
+
 watchEffect(() => {
   if (activeDemoId.value) {
     codeApi.codeDetail(activeDemo.value!.codeId).then((v) => {
