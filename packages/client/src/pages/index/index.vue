@@ -16,7 +16,9 @@
         </div>
         <div v-else>
           <el-button disabled>分享（开发中..）</el-button>
-          <el-button type="success" @click="handleSave">保存</el-button>
+          <el-button type="success" @click="handleSave"
+            >保存 (Ctrl+S)</el-button
+          >
         </div>
       </div>
       <div>
@@ -113,7 +115,14 @@
   </div>
 </template>
 <script setup lang="ts">
-import { computed, onMounted, reactive, ref, watchEffect } from 'vue'
+import {
+  computed,
+  onMounted,
+  onUnmounted,
+  reactive,
+  ref,
+  watchEffect
+} from 'vue'
 import { Expand, Fold } from '@element-plus/icons-vue'
 import { ElMessageBox, ElMessage } from 'element-plus'
 import { validatePassword, validateUsername } from '@share/utils/validate'
@@ -274,8 +283,28 @@ watchEffect(() => {
   }
 })
 
+const handleKeyDownEvent = (e: KeyboardEvent) => {
+  // ctrl + s || command + s
+  if (e.keyCode === 83 && (e.ctrlKey || e.metaKey)) {
+    e.preventDefault()
+    handleSave()
+  }
+}
+const handleVisibilityChange = () => {
+  if (document.hidden) {
+    handleSave()
+  } else {
+    handleSave()
+  }
+}
 onMounted(() => {
   $userStore.checkUserStatus()
+  window.addEventListener('keydown', handleKeyDownEvent)
+  document.addEventListener('visibilitychange', handleVisibilityChange, false)
+})
+onUnmounted(() => {
+  window.removeEventListener('keydown', handleKeyDownEvent)
+  document.removeEventListener('visibilitychange', handleVisibilityChange)
 })
 </script>
 <style scoped lang="scss">
