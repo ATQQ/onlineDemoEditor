@@ -9,6 +9,11 @@ import {
 import { getUserInfo } from '@/utils/userUtil'
 import { Note } from '@/db/model'
 import { findNote, updateNote } from '@/db/noteDb'
+import {
+  getUploadToken,
+  previewStyle,
+  privateBucketDomain
+} from '@/utils/qiniuUtil'
 
 @RouterController('api/note')
 export default class NoteController {
@@ -44,5 +49,17 @@ export default class NoteController {
         }
       }
     )
+  }
+
+  @Get('upload/token', { requiresAuth: true })
+  async uploadToken() {
+    const token = await getUploadToken()
+    const domain = privateBucketDomain
+    const minify = previewStyle
+    return {
+      token,
+      domain,
+      minify
+    }
   }
 }

@@ -14,12 +14,15 @@ import InlineCode from '@editorjs/inline-code'
 import Link from '@editorjs/link'
 import underline from '@editorjs/underline'
 import { onMounted, ref, watchEffect } from 'vue'
-import { useNoteStore } from '@/store'
+import { useNoteStore, useUserStore } from '@/store'
+import { noteApi } from '@/apis'
+import { getRandomKey, qiniuUpload } from '@/utils/qiniuUtil'
 
 const props = defineProps<{
   data?: any
 }>()
 const $noteStore = useNoteStore()
+const $userStore = useUserStore()
 const editor = ref<EditorJS>(null as any)
 watchEffect(() => {
   if (props.data && editor.value) {
@@ -57,7 +60,35 @@ onMounted(() => {
       header: Header,
       list: List,
       embed: Embed,
-      image: Image,
+      image: {
+        class: Image,
+        config: {
+          uploader: {
+            uploadByFile(file: File) {
+              // return {
+              //   success: 1,
+              //   file: {
+              //     url: 'https://img.cdn.sugarat.top/online-editor/6302403434e52962875fbf3e/1661169105550/pupza3m486'
+              //   }
+              // }
+              return noteApi.getUploadToken().then((uploadTokenData) => {
+                const { token, domain, minify } = uploadTokenData.data
+                const key = `online-editor/${
+                  $userStore.userId
+                }/${Date.now()}/${getRandomKey()}`
+                return qiniuUpload(token, file, key).then(() => {
+                  return {
+                    success: 1,
+                    file: {
+                      url: `${domain}/${key}${minify}`
+                    }
+                  }
+                })
+              })
+            }
+          }
+        }
+      },
       checklist: Checklist,
       code: Code,
       marker: Marker,

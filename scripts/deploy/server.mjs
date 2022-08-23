@@ -14,7 +14,7 @@ const destDir = 'server'
 const compressFile = ''
 
 await $`echo ==🔧 压缩==`
-await $`cd packages/server && tar -zvcf ${compressPkgName} dist package.json .env`
+await $`cd packages/server && tar -zvcf ${compressPkgName} dist package.json .env .env.local`
 
 await $`echo ==🚀 上传到服务器 ==`
 await $`cd packages/server && scp ${compressPkgName} ${user}@${origin}:./`

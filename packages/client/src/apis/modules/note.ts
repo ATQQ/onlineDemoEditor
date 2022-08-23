@@ -10,7 +10,16 @@ function updateDetail(id: string, body: Note['data']) {
   return ajax.put(`note/${id}`, body)
 }
 
+function getUploadToken(): ResponseData<{
+  token: string
+  domain: string
+  minify: string
+}> {
+  return ajax.get('note/upload/token')
+}
+
 export default {
   getNodeDetail,
-  updateDetail
+  updateDetail,
+  getUploadToken
 }
