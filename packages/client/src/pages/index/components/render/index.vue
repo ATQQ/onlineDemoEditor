@@ -57,7 +57,8 @@ watchEffect(() => {
     if (renderType === 'iframe') {
       const tem = document.createElement('iframe')
       tem.addEventListener('load', () => {
-        console.clear()
+        // console.clear()
+        // TODO:使用调试工具替代
         tem.contentDocument?.head.append($baseStyle.value, $style.value)
         tem.contentDocument?.body.append($html.value, $script.value)
         $iframe.value.remove()

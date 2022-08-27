@@ -28,6 +28,7 @@ const useStore = defineStore('user', {
           this.username = res.data.username
           this.isLogin = true
           this.userId = res.data.id
+          return true
         })
         .catch(() => {
           this.isLogin = false
