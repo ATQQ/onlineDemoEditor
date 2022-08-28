@@ -3,32 +3,45 @@
     <header>
       <div>
         <el-button
+          v-if="userMode"
           @click="showNoteList = !showNoteList"
           :type="showNoteList ? 'primary' : 'default'"
           :icon="showNoteList ? Expand : Fold"
           circle
         />
         <el-button
-          :disabled="!isLogin"
+          :disabled="!isLogin && userMode"
           @click="showNoteEditor = !showNoteEditor"
           :type="showNoteEditor ? 'primary' : 'default'"
           :icon="EditPen"
           circle
         />
+        <el-button type="primary" text> {{ '<= 控制要展示的面板' }}</el-button>
       </div>
       <div class="top-tools">
         <span class="tip">{{ tipText }}</span>
-        <div v-if="!isLogin">
-          <el-button type="success" @click="showLoginDialog = true"
-            >登录</el-button
-          >
-        </div>
-        <div v-else>
-          <el-button disabled>分享（开发中..）</el-button>
-          <el-button type="success" @click="handleSave"
-            >保存 (Ctrl+S)</el-button
-          >
-        </div>
+        <el-button
+          :disabled="!isLogin"
+          v-if="shareMode"
+          type="success"
+          @click="handleFork"
+          >Fork</el-button
+        >
+        <el-button
+          v-if="!isLogin"
+          type="success"
+          @click="showLoginDialog = true"
+          >登录</el-button
+        >
+        <el-button
+          v-if="isLogin && userMode"
+          type="success"
+          @click="handleShare"
+          >分享</el-button
+        >
+        <el-button v-if="userMode && isLogin" type="success" @click="handleSave"
+          >保存 (Ctrl+S)</el-button
+        >
       </div>
       <div>
         <el-link
@@ -47,7 +60,7 @@
       </div>
     </header>
     <main>
-      <div class="note-list" v-show="showNoteList">
+      <div v-if="userMode" class="note-list" v-show="showNoteList">
         <div v-if="isLogin">
           <div class="control">
             <el-button @click="handleAddNote">新增</el-button>
@@ -66,6 +79,7 @@
         <div v-else class="no-logon">
           <p class="title">请先进行登录</p>
           <p>登录后才能<strong>编写笔记</strong></p>
+          <p>登录后才能<strong>分享笔记</strong></p>
           <p>登录后才能<strong>保存数据</strong></p>
         </div>
       </div>
@@ -73,11 +87,12 @@
       <div
         class="note"
         :style="{
-          width: isLogin && showNoteEditor ? '800px' : '0',
-          overflow: isLogin && showNoteEditor ? 'visible' : 'hidden'
+          width: (isLogin || shareMode) && showNoteEditor ? '800px' : '0',
+          overflow:
+            (isLogin || shareMode) && showNoteEditor ? 'visible' : 'hidden'
         }"
       >
-        <Note :data="codeData.note" />
+        <Note :data="codeData.note" :readonly="shareMode" />
       </div>
       <div class="container">
         <!-- 写代码 -->
@@ -134,6 +149,32 @@
         </span>
       </template>
     </el-dialog>
+    <el-dialog v-model="showShareDialog" title="分享笔记" width="500px" center>
+      <div class="share-dialog">
+        <div class="item">
+          <span>启用分享</span>
+          <el-switch
+            :value="!!activeDemo?.share"
+            class="ml-2"
+            inline-prompt
+            style="
+              --el-switch-on-color: #13ce66;
+              --el-switch-off-color: #ff4949;
+            "
+            active-text="是"
+            inactive-text="否"
+            @change="handleChangeShare"
+          />
+        </div>
+        <div class="item">
+          <el-input v-show="!!activeDemo?.share" v-model="shareLink" disabled>
+            <template #append>
+              <el-button @click="handleCopyLink">复制</el-button>
+            </template>
+          </el-input>
+        </div>
+      </div>
+    </el-dialog>
   </div>
 </template>
 <script setup lang="ts">
@@ -149,27 +190,38 @@ import { Expand, Fold, EditPen } from '@element-plus/icons-vue'
 import { ElMessageBox, ElMessage } from 'element-plus'
 import { validatePassword, validateUsername } from '@share/utils/validate'
 import { Demo } from '@server/db/model'
+import { useRoute, useRouter } from 'vue-router'
 import Note from './components/note/index.vue'
 import CodeEditor from './components/editor/index.vue'
 import RenderPage from './components/render/index.vue'
 import { useCodeStore, useNoteStore, useUserStore } from '@/store'
 import { codeApi, demoApi, noteApi } from '@/apis'
 import { formatCss, formatHtml, formatJS } from '@/utils/code'
+import { copyRes } from '@/utils/fun'
 
+// 取点要用的数据
 const $userStore = useUserStore()
 const $codeStore = useCodeStore()
 const $noteStore = useNoteStore()
+const $route = useRoute()
+const $router = useRouter()
+const userMode = computed(() => $route.name === 'index')
+const shareMode = computed(() => $route.name === 'share')
 
 const isLogin = computed(() => $userStore.isLogin)
+
+// 控制左侧2个面板展示
 const showNoteList = ref(true)
 const showNoteEditor = ref(true)
-const demoList = reactive<Demo[]>([])
 
+// 例子列表
+const demoList = reactive<Demo[]>([])
 const activeDemoId = ref('')
 const activeDemo = computed(() => {
   const id = activeDemoId.value
   return demoList.find((v) => v.id === id)
 })
+
 const handleAddNote = () => {
   ElMessageBox.prompt('输入笔记名称', '新增笔记', {
     confirmButtonText: '确定',
@@ -210,7 +262,7 @@ const codeData = reactive({
 })
 
 const handleSave = async (showSuccess = true) => {
-  if (!isLogin.value) {
+  if (!isLogin.value || shareMode.value) {
     return
   }
   // 先进行格式化
@@ -253,9 +305,14 @@ const handleSave = async (showSuccess = true) => {
 const handleChangeNote = async (v: Demo) => {
   await handleSave(false)
   activeDemoId.value = v.id
-  localStorage.setItem('current-note', v.id)
 }
 const tipText = computed(() => {
+  if (userMode.value) {
+    return isLogin.value ? '' : '请先登录 => '
+  }
+  if (shareMode.value) {
+    return isLogin.value ? '将其保存到自己的笔记中 => ' : '登录后才可fork => '
+  }
   return isLogin.value ? '' : '请先登录 => '
 })
 
@@ -309,8 +366,10 @@ const handleLogout = () => {
       })
     })
 }
+
+// 登录后触发
 watchEffect(() => {
-  if (isLogin.value) {
+  if (isLogin.value && userMode.value) {
     demoApi.demoList().then((v) => {
       demoList.splice(0, demoList.length, ...v.data)
       // 获取最近的一个笔记
@@ -319,9 +378,14 @@ watchEffect(() => {
     })
   }
 })
-
 watchEffect(() => {
   if (activeDemoId.value) {
+    localStorage.setItem('current-note', activeDemoId.value)
+  }
+})
+// 笔记切换的时候触发
+watchEffect(() => {
+  if (activeDemoId.value && userMode.value) {
     codeApi.codeDetail(activeDemo.value!.codeId).then((v) => {
       codeData.html = '<!-- 数据加载中 -->'
       codeData.css = '/* 数据加载中 */'
@@ -338,6 +402,27 @@ watchEffect(() => {
   }
 })
 
+watchEffect(() => {
+  if (shareMode.value && activeDemoId.value) {
+    demoApi.getShareData(activeDemoId.value).then((v) => {
+      const { share, code, note } = v.data
+      if (!share) {
+        ElMessage.error('已停止共享')
+        return
+      }
+      codeData.html = '<!-- 数据加载中 -->'
+      codeData.css = '/* 数据加载中 */'
+      codeData.js = '// 数据加载中'
+      codeData.note = note
+      setTimeout(() => {
+        codeData.html = code.html
+        codeData.css = code.css
+        codeData.js = code.js
+      }, 200)
+    })
+  }
+})
+// 绑定保存快捷键
 const handleKeyDownEvent = (e: KeyboardEvent) => {
   // ctrl + s || command + s
   if (e.keyCode === 83 && (e.ctrlKey || e.metaKey)) {
@@ -346,11 +431,48 @@ const handleKeyDownEvent = (e: KeyboardEvent) => {
   }
 }
 
+// 分享相关逻辑
+const showShareDialog = ref(false)
+const shareLink = ref('')
+
+const handleShare = () => {
+  showShareDialog.value = true
+  shareLink.value = `${window.location.protocol}//${window.location.hostname}${
+    ['443', '80'].includes(window.location.port)
+      ? ''
+      : `:${window.location.port}`
+  }/share/${activeDemoId.value}`
+}
+const handleChangeShare = () => {
+  demoApi.shareDemo(activeDemo.value!.id, !activeDemo.value?.share).then(() => {
+    activeDemo!.value!.share = !activeDemo.value?.share
+  })
+}
+const handleCopyLink = () => {
+  copyRes(shareLink.value, '链接已成功复制到剪贴板')
+}
+
+// fork相关逻辑
+const handleFork = () => {
+  demoApi.forkDemo(activeDemoId.value).then((v) => {
+    localStorage.setItem('current-note', v.data.id)
+    ElMessage.success('fork 成功')
+    // 调接口
+    // 回到自己的页面
+    setTimeout(() => {
+      window.location.replace('/')
+    })
+  })
+}
+
 const touchBar = ref<HTMLElement>()
 const codeWidth = ref(Number(localStorage.getItem('codeWidth')) || 900)
 onMounted(() => {
+  if (shareMode.value) {
+    activeDemoId.value = $route.params.id as string
+  }
   $userStore.checkUserStatus().then((status) => {
-    if (!status) {
+    if (!status && userMode) {
       $noteStore.updateNote($noteStore.defaultNote)
     }
   })
@@ -385,111 +507,5 @@ onUnmounted(() => {
 })
 </script>
 <style scoped lang="scss">
-.note-list {
-  width: 200px;
-  padding: 10px;
-  box-sizing: border-box;
-
-  .control {
-    text-align: center;
-    margin-bottom: 10px;
-  }
-
-  ul li {
-    padding: 10px;
-    line-height: 20px;
-    font-size: 13px;
-    font-weight: 500;
-    color: #606266;
-    transition: color 0.5s;
-    cursor: pointer;
-  }
-
-  ul li:hover {
-    color: #409eff;
-  }
-
-  ul li.active {
-    color: #409eff;
-    background-color: rgba(64, 158, 255, 0.1);
-  }
-}
-
-header {
-  background-color: #3c3c3c;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 10px 30px 10px 10px;
-  position: relative;
-  .top-tools {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    .tip {
-      margin: 0 20px;
-      color: #fff;
-    }
-  }
-}
-
-.control-note-list {
-  position: absolute;
-  left: 20px;
-}
-
-main {
-  display: flex;
-  height: calc(100vh - 56px);
-  overflow: hidden;
-  .no-logon {
-    text-align: center;
-    color: #606266;
-    p {
-      font-size: 15px;
-      padding: 10px;
-    }
-    p.title {
-      font-size: 20px;
-    }
-  }
-}
-
-.note {
-  background-color: rgba(255, 220, 23, 0.773);
-  width: 720px;
-}
-
-.code {
-  background-color: #000;
-  position: relative;
-  width: 900px;
-}
-
-.render {
-  flex: 1;
-  background-color: rgb(43, 191, 254);
-}
-
-.container {
-  flex: 1;
-  display: flex;
-}
-.logout {
-  margin: 0 16px;
-}
-.touchBar {
-  width: 3px;
-  height: 100%;
-  position: absolute;
-  right: 0;
-  top: 0;
-  cursor: col-resize;
-  background-color: #606266;
-}
-.touchBar:hover {
-  width: 4px;
-  background-color: #409eff;
-  box-shadow: 0 0 2px #409eff;
-}
+@import './style.scss';
 </style>

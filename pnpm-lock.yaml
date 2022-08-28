@@ -70,6 +70,7 @@ importers:
       '@editorjs/warning': ^1.2.0
       '@element-plus/icons-vue': ^2.0.9
       '@vitejs/plugin-vue': ^2.3.4
+      clipboard-copy: ^4.0.1
       element-plus: ^2.2.14
       monaco-editor: ^0.34.0
       pinia: ^2.0.19
@@ -97,6 +98,7 @@ importers:
       '@editorjs/underline': 1.0.0
       '@editorjs/warning': 1.2.0
       '@element-plus/icons-vue': 2.0.9_vue@3.2.37
+      clipboard-copy: 4.0.1
       element-plus: 2.2.14_vue@3.2.37
       monaco-editor: 0.34.0
       pinia: 2.0.19_typescript@4.7.4+vue@3.2.37
@@ -1003,6 +1005,10 @@ packages:
     optionalDependencies:
       fsevents: 2.3.2
     dev: true
+
+  /clipboard-copy/4.0.1:
+    resolution: {integrity: sha512-wOlqdqziE/NNTUJsfSgXmBMIrYmfd5V0HCGsR8uAKHcg+h9NENWINcfRjtWGU77wDHC8B8ijV4hMTGYbrKovng==}
+    dev: false
 
   /cliui/7.0.4:
     resolution: {integrity: sha512-OcRE68cOsVMXp1Yvonl/fzkQOyjLSu/8bhPDfQt0e0/Eb283TKP20Fs2MqoPsr9SwA595rRCA+QMzYc9nBP+JQ==}

@@ -14,7 +14,7 @@ export interface Demo {
   title: string
   des?: string
   share?: boolean
-  fork?: boolean
+  forkFrom?: string
 
   noteId: string
   codeId: string

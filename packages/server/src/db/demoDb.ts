@@ -24,7 +24,11 @@ export function updateDemo(query: FilterQuery<Demo>, data: UpdateQuery<Demo>) {
   return updateCollection<Demo>('demo', query, data)
 }
 
-export async function createDefaultDemo(userId: string, title?: string) {
+export async function createDefaultDemo(
+  userId: string,
+  title?: string,
+  forkFrom?: string
+) {
   const demoNote = await addNote({
     userId,
     data: {
@@ -94,7 +98,8 @@ export async function createDefaultDemo(userId: string, title?: string) {
     userId,
     title: title || '示例笔记',
     noteId: demoNote.id,
-    codeId: demoCode.id
+    codeId: demoCode.id,
+    forkFrom
   })
   return demo
 }

@@ -20,6 +20,7 @@ import { getRandomKey, qiniuUpload } from '@/utils/qiniuUtil'
 
 const props = defineProps<{
   data?: any
+  readonly?: boolean
 }>()
 const $noteStore = useNoteStore()
 const $userStore = useUserStore()
@@ -30,9 +31,11 @@ watchEffect(() => {
     editor.value?.render(props.data)
   }
 })
+
 onMounted(() => {
   const _editor = new EditorJS({
     holder: 'note-editor',
+    readOnly: !!props.readonly,
     placeholder: '在这里开始记录你的笔记',
     /**
          onReady callback
@@ -111,9 +114,9 @@ onMounted(() => {
   height: 100%;
   overflow-y: scroll;
   overflow-x: hidden;
-  :deep(.ce-block__content) {
-    margin-left: 6px;
-    margin-right: 0;
-  }
+  // :deep(.ce-block__content) {
+  //   margin-left: 6px;
+  //   margin-right: 0;
+  // }
 }
 </style>

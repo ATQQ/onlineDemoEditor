@@ -29,6 +29,7 @@
     "@editorjs/underline": "^1.0.0",
     "@editorjs/warning": "^1.2.0",
     "@element-plus/icons-vue": "^2.0.9",
+    "clipboard-copy": "^4.0.1",
     "element-plus": "^2.2.14",
     "monaco-editor": "^0.34.0",
     "pinia": "^2.0.19",

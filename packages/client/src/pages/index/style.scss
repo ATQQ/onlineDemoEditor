@@ -1,0 +1,115 @@
+.note-list {
+  width: 200px;
+  padding: 10px;
+  box-sizing: border-box;
+
+  .control {
+    text-align: center;
+    margin-bottom: 10px;
+  }
+
+  ul li {
+    padding: 10px;
+    line-height: 20px;
+    font-size: 13px;
+    font-weight: 500;
+    color: #606266;
+    transition: color 0.5s;
+    cursor: pointer;
+  }
+
+  ul li:hover {
+    color: #409eff;
+  }
+
+  ul li.active {
+    color: #409eff;
+    background-color: rgba(64, 158, 255, 0.1);
+  }
+}
+
+header {
+  background-color: #3c3c3c;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 30px 10px 10px;
+  position: relative;
+  .top-tools {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    .tip {
+      margin: 0 20px;
+      color: #fff;
+    }
+  }
+}
+
+.control-note-list {
+  position: absolute;
+  left: 20px;
+}
+
+main {
+  display: flex;
+  height: calc(100vh - 56px);
+  overflow: hidden;
+  .no-logon {
+    text-align: center;
+    color: #606266;
+    p {
+      font-size: 15px;
+      padding: 10px;
+    }
+    p.title {
+      font-size: 20px;
+    }
+  }
+}
+
+.note {
+  background-color: rgba(255, 220, 23, 0.773);
+  width: 720px;
+}
+
+.code {
+  background-color: #000;
+  position: relative;
+  width: 900px;
+}
+
+.render {
+  flex: 1;
+  background-color: rgb(43, 191, 254);
+}
+
+.container {
+  flex: 1;
+  display: flex;
+}
+.logout {
+  margin: 0 16px;
+}
+.touchBar {
+  width: 3px;
+  height: 100%;
+  position: absolute;
+  right: 0;
+  top: 0;
+  cursor: col-resize;
+  background-color: #606266;
+}
+.touchBar:hover {
+  width: 4px;
+  background-color: #409eff;
+  box-shadow: 0 0 2px #409eff;
+}
+.share-dialog {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  .item {
+    margin-bottom: 10px;
+  }
+}

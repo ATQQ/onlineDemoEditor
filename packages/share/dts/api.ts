@@ -18,6 +18,12 @@ export declare namespace DemoApiTypes {
   type demoList = ResponseData<Demo[]>
 
   type createDemo = ResponseData<Demo>
+
+  type shareData = ResponseData<{
+    code: Code
+    note: Note['data']
+    share: boolean
+  }>
 }
 
 export declare namespace CodeApiTypes {

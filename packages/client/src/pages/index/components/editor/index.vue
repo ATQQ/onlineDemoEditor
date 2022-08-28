@@ -117,7 +117,7 @@ onMounted(() => {
 .other-editor {
   border-top: 1px solid #fff;
   width: 100%;
-  height: 40%;
+  height: 45%;
 }
 
 #js-editor,

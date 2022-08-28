@@ -6,19 +6,18 @@ const routes: RouteRecordRaw[] = [
   { path: '/:pathMatch(.*)*', name: 'NotFound', component: NotFind },
   {
     path: '/',
-    name: 'index',
-    component: Index
-    // children: [
-    //   {
-    //     path: 'dynamic/:id',
-    //     component: Dynamic,
-    //     meta: {
-    //       requireLogin: false,
-    //       isAdmin: true
-    //     },
-    //     name: 'dynamic'
-    //   }
-    // ]
+    children: [
+      {
+        path: '/',
+        name: 'index',
+        component: Index
+      },
+      {
+        path: '/share/:id',
+        name: 'share',
+        component: Index
+      }
+    ]
   }
 ]
 
