@@ -44,6 +44,9 @@
         >
       </div>
       <div>
+        <span v-if="isLogin" class="tip"
+          >登录账号 <span>{{ $userStore.username }}</span>
+        </span>
         <el-link
           type="primary"
           href="https://github.com/ATQQ/onlineDemoEditor"
