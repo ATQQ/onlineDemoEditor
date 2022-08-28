@@ -441,9 +441,7 @@ const shareLink = ref('')
 const handleShare = () => {
   showShareDialog.value = true
   shareLink.value = `${window.location.protocol}//${window.location.hostname}${
-    ['443', '80'].includes(window.location.port)
-      ? ''
-      : `:${window.location.port}`
+    window.location.port && `:${window.location.port}`
   }/share/${activeDemoId.value}`
 }
 const handleChangeShare = () => {
