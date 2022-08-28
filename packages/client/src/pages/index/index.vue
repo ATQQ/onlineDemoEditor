@@ -69,28 +69,35 @@
           <p>登录后才能<strong>保存数据</strong></p>
         </div>
       </div>
-      <!-- TODO：失去焦点时自动保存，格式化 -->
       <!-- 写笔记 -->
       <div
-        class="note container"
+        class="note"
         :style="{
-          flex: isLogin && showNoteEditor ? '1' : '0',
+          width: isLogin && showNoteEditor ? '800px' : '0',
           overflow: isLogin && showNoteEditor ? 'visible' : 'hidden'
         }"
       >
         <Note :data="codeData.note" />
       </div>
-      <!-- 写代码 -->
-      <div class="code container">
-        <CodeEditor
-          :html="codeData.html"
-          :css="codeData.css"
-          :js="codeData.js"
-        />
-      </div>
-      <!-- 代码渲染结果 -->
-      <div class="render container">
-        <RenderPage />
+      <div class="container">
+        <!-- 写代码 -->
+        <div
+          class="code"
+          :style="{
+            width: `${codeWidth}px`
+          }"
+        >
+          <CodeEditor
+            :html="codeData.html"
+            :css="codeData.css"
+            :js="codeData.js"
+          />
+          <div class="touchBar" ref="touchBar"></div>
+        </div>
+        <!-- 代码渲染结果 -->
+        <div class="render">
+          <RenderPage />
+        </div>
       </div>
     </main>
     <el-dialog v-model="showLoginDialog" title="登录" width="400px" center>
@@ -145,7 +152,6 @@ import { Demo } from '@server/db/model'
 import Note from './components/note/index.vue'
 import CodeEditor from './components/editor/index.vue'
 import RenderPage from './components/render/index.vue'
-import { version } from '../../../package.json'
 import { useCodeStore, useNoteStore, useUserStore } from '@/store'
 import { codeApi, demoApi, noteApi } from '@/apis'
 import { formatCss, formatHtml, formatJS } from '@/utils/code'
@@ -339,63 +345,43 @@ const handleKeyDownEvent = (e: KeyboardEvent) => {
     handleSave()
   }
 }
-// const handleVisibilityChange = () => {
-//   if (document.hidden) {
-//     handleSave()
-//   } else {
-//     handleSave()
-//   }
-// }
+
+const touchBar = ref<HTMLElement>()
+const codeWidth = ref(Number(localStorage.getItem('codeWidth')) || 900)
 onMounted(() => {
   $userStore.checkUserStatus().then((status) => {
     if (!status) {
-      $noteStore.updateNote({
-        blocks: [
-          {
-            type: 'header',
-            data: { text: '示例笔记', level: 1 }
-          },
-          {
-            type: 'header',
-            data: { text: '二级标题', level: 2 }
-          },
-          {
-            type: 'header',
-            data: { text: '三级标题', level: 3 }
-          },
-          {
-            type: 'paragraph',
-            data: { text: '<b>加粗内容</b>' }
-          },
-          {
-            type: 'paragraph',
-            data: { text: '<i>斜体字</i>' }
-          },
-          {
-            type: 'paragraph',
-            data: { text: '高亮<mark class="cdx-marker">部分</mark>内容' }
-          },
-          {
-            type: 'paragraph',
-            data: { text: '部分<code class="inline-code">代码</code>标记' }
-          },
-          {
-            type: 'paragraph',
-            data: { text: '部分<u class="cdx-underline">下划线</u>' }
-          }
-        ].map((block) => ({
-          ...block,
-          id: Math.random().toString(36).substr(2)
-        }))
-      })
+      $noteStore.updateNote($noteStore.defaultNote)
     }
   })
   window.addEventListener('keydown', handleKeyDownEvent)
-  // document.addEventListener('visibilitychange', handleVisibilityChange, false)
+
+  touchBar.value?.addEventListener('mousedown', (e) => {
+    const startPosX = e.pageX
+    const startWidth = codeWidth.value
+    // 解决iframe mousemove失效
+    const mask = document.createElement('div')
+    mask.style.position = 'fixed'
+    mask.style.width = '100vw'
+    mask.style.height = '100vh'
+    mask.style.opacity = '0'
+    mask.style.top = '0'
+    document.body.append(mask)
+    const handleMouseMove = (e: MouseEvent) => {
+      codeWidth.value = startWidth - (startPosX - e.pageX)
+      localStorage.setItem('codeWidth', `${codeWidth.value}`)
+    }
+    const handleMouseUp = () => {
+      mask.remove()
+      document?.removeEventListener('mousemove', handleMouseMove)
+      document?.removeEventListener('mouseup', handleMouseUp)
+    }
+    document?.addEventListener('mousemove', handleMouseMove)
+    document?.addEventListener('mouseup', handleMouseUp)
+  })
 })
 onUnmounted(() => {
   window.removeEventListener('keydown', handleKeyDownEvent)
-  // document.removeEventListener('visibilitychange', handleVisibilityChange)
 })
 </script>
 <style scoped lang="scss">
@@ -454,6 +440,8 @@ header {
 
 main {
   display: flex;
+  height: calc(100vh - 56px);
+  overflow: hidden;
   .no-logon {
     text-align: center;
     color: #606266;
@@ -469,21 +457,39 @@ main {
 
 .note {
   background-color: rgba(255, 220, 23, 0.773);
+  width: 720px;
 }
 
 .code {
   background-color: #000;
+  position: relative;
+  width: 900px;
 }
 
 .render {
+  flex: 1;
   background-color: rgb(43, 191, 254);
 }
 
 .container {
-  width: 33%;
   flex: 1;
+  display: flex;
 }
 .logout {
   margin: 0 16px;
+}
+.touchBar {
+  width: 3px;
+  height: 100%;
+  position: absolute;
+  right: 0;
+  top: 0;
+  cursor: col-resize;
+  background-color: #606266;
+}
+.touchBar:hover {
+  width: 4px;
+  background-color: #409eff;
+  box-shadow: 0 0 2px #409eff;
 }
 </style>

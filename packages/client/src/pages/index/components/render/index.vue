@@ -57,9 +57,27 @@ watchEffect(() => {
     if (renderType === 'iframe') {
       const tem = document.createElement('iframe')
       tem.addEventListener('load', () => {
-        console.clear()
+        const debugPlugin = document.createElement('script')
+        debugPlugin.src = '//cdn.jsdelivr.net/npm/eruda'
+        const debugExec = document.createElement('script')
+        debugExec.textContent = `window?.eruda.init({
+      defaults: {
+        displaySize: 25,
+        transparency: 0.9,
+      }
+    })
+    eruda.show()
+    `
         tem.contentDocument?.head.append($baseStyle.value, $style.value)
-        tem.contentDocument?.body.append($html.value, $script.value)
+        tem.contentDocument?.body.append(debugPlugin)
+        debugPlugin.onload = function () {
+          tem.contentDocument?.body.append(debugExec)
+          tem.contentDocument?.body.append(
+            debugExec,
+            $html.value,
+            $script.value
+          )
+        }
         $iframe.value.remove()
         $iframe.value = tem
       })

@@ -11,7 +11,7 @@ import Checklist from '@editorjs/checklist'
 import Code from '@editorjs/code'
 import Marker from '@editorjs/marker'
 import InlineCode from '@editorjs/inline-code'
-import Link from '@editorjs/link'
+// import Link from '@editorjs/link'
 import underline from '@editorjs/underline'
 import { onMounted, ref, watchEffect } from 'vue'
 import { useNoteStore, useUserStore } from '@/store'
@@ -93,7 +93,6 @@ onMounted(() => {
       code: Code,
       marker: Marker,
       inlineCode: InlineCode,
-      link: Link,
       underline
     },
     i18n: {
@@ -102,10 +101,19 @@ onMounted(() => {
   })
 })
 </script>
-<style scoped>
+<style scoped lang="scss">
 #note-editor {
   background-color: aliceblue;
-  padding-left: 10px;
-  height: 95vh;
+  padding-left: 20px;
+  padding-right: 0;
+  width: 100%;
+  min-width: 100px;
+  height: 100%;
+  overflow-y: scroll;
+  overflow-x: hidden;
+  :deep(.ce-block__content) {
+    margin-left: 6px;
+    margin-right: 0;
+  }
 }
 </style>
