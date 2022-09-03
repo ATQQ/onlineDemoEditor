@@ -33,7 +33,7 @@ const htmlEditor = ref<monaco.editor.IStandaloneCodeEditor>(null as any)
 const CSSEditor = ref<monaco.editor.IStandaloneCodeEditor>(null as any)
 const JSEditor = ref<monaco.editor.IStandaloneCodeEditor>(null as any)
 
-const activeEditor = ref<'隐藏' | 'CSS' | 'JS'>('CSS')
+const activeEditor = ref<'隐藏' | 'CSS' | 'JS'>('JS')
 watchEffect(() => {
   if (htmlEditor.value && props.html) {
     toRaw(htmlEditor.value).setValue(props.html)
@@ -117,7 +117,7 @@ onMounted(() => {
 .other-editor {
   border-top: 1px solid #fff;
   width: 100%;
-  height: 45%;
+  height: 70%;
 }
 
 #js-editor,

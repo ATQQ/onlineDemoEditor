@@ -60,7 +60,7 @@ watchEffect(() => {
         const debugPlugin = document.createElement('script')
         debugPlugin.src = '//cdn.jsdelivr.net/npm/eruda'
         const debugExec = document.createElement('script')
-        debugExec.textContent = `window?.eruda.init({
+        debugExec.textContent = `window.eruda.init({
       defaults: {
         displaySize: 25,
         transparency: 0.9,
@@ -71,7 +71,6 @@ watchEffect(() => {
         tem.contentDocument?.head.append($baseStyle.value, $style.value)
         tem.contentDocument?.body.append(debugPlugin)
         debugPlugin.onload = function () {
-          tem.contentDocument?.body.append(debugExec)
           tem.contentDocument?.body.append(
             debugExec,
             $html.value,
